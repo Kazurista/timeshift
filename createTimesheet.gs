@@ -61,9 +61,6 @@ function createNewSheet() {
   var date_data = Utilities.formatDate(date, "JST", "dd");
   var last_date = Utilities.formatDate(end_date, "JST", "dd");
   
-  // 新しいスプレッドシートを作成
-  // var new_ss = SpreadsheetApp.create(month + "月 シフト");
-  
   var i = 0;
   // 月初から月末までループ
   while(date_data != last_date){
@@ -74,16 +71,43 @@ function createNewSheet() {
     var day_num = date.getDay();
     var day = "("+week_arr[day_num]+")";
     
-    
-    
     // 新しいシートをoriginalSheet(原本)から新しく作成されたスプレッドシートに追加
-    // var newSheet = originalSheet.copyTo(new_ss);
-    // newSheet.setName(month_data + date_data);
-    // newSheet.getRange("A1").setValue(month_data + "月" + date_data + "日" + day);
+    var newSheet = originalSheet.copyTo(ss_active);
+    newSheet.setName(month_data + date_data);
+    newSheet.getRange("A1").setValue(month_data + "月" + date_data + "日" + day);
     i++;
   }
 }
 
 function getTotalTime() {
+  // シフト原本のスプレッドシート
+  var original_ss = SpreadsheetApp.getActiveSpreadsheet();
+  var original_sheets = original_ss.getSheets();
+  var first_sheet = original_sheets[0]
+  
+  // 原本の{A1}に入力された月を取得
+  var month = first_sheet.getRange("A1").getValue();
 
+  // 管理者用のスプレッドシート
+  var admin_ss = SpreadsheetApp.openById('1YsOY1uqmNheXdEvv9FvjhHZjEhR3M5lv_K37W0AQNHw');
+  // 作成している月のシートを取得
+  var admin_sheet = admin_ss.getSheetByName(month);
+  admin_sheet.getRange("A1").setValue(month + "月");
+  
+  var sheet_len = original_ss.getNumSheets()
+  
+  // 従業員数
+  var row_len = first_sheet.getLastRow()-1;  
+  var last_line = first_sheet.getLastColumn();
+  
+  for(var i=1; i < sheet_len; i++){
+    // 原本以降のシートの数分だけループ
+    Logger.log("iの値は" + i);
+    var sheet = original_sheets[i];
+    for(var j=4; j<row_len; j=j+2){
+      var work_time = sheet.getRange(j, last_line).getValue();
+      Logger.log(work_time);
+      admin_sheet.getRange(j, i+2).setValue(work_time);
+    }
+  }
 }
