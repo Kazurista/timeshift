@@ -1,43 +1,47 @@
 function timeCaluculations() {
   // 現在アクティブなスプレッドシートを取得
   var ss = SpreadsheetApp.getActiveSpreadsheet();
-  // そのスプレッドシートにある最初のシートを取得
-  var sheet = ss.getSheets()[0];
   
-  // シフト管理する従業員数(+1余白)
-  var lastRow = sheet.getLastRow()-5;
-  var lastColumn = sheet.getLastColumn()-3;
+  var sheet_len = original_ss.getNumSheets();
+  for(var k=1; k<sheet_len; k++){
+    // そのスプレッドシートにある最初のシートを取得
+    var sheet = ss.getSheets()[k];
   
-  // 従業員数分だけループ
-  for(var i = 0; i <= lastRow; i += 2){
-    var count = 0;
+    // シフト管理する従業員数(+1余白)
+    var lastRow = sheet.getLastRow()-5;
+    var lastColumn = sheet.getLastColumn()-3;
+  
+    // 従業員数分だけループ
+    for(var i = 0; i <= lastRow; i += 2){
+      var count = 0;
     
-     bgColors = [];
+      bgColors = [];
     
-    // 黒のセル数をカウント
-    for(var j = 0; j <= lastColumn; j++){
-      var columnRange = sheet.getRange(i+4, j+2);
+      // 黒のセル数をカウント
+      for(var j = 0; j <= lastColumn; j++){
+        var columnRange = sheet.getRange(i+4, j+2);
       
-      if(columnRange.getBackground() == "#000000" || columnRange.getBackground() == "#00ff00"){
-        count++;
+        if(columnRange.getBackground() == "#000000" || columnRange.getBackground() == "#00ff00"){
+          count++;
+        }
       }
-    }
     
-    // 勤務時間の計算    
-    var hours = count*0.25
-    sheet.getRange(i+4, lastColumn+1).setValue(hours)
+      // 勤務時間の計算    
+      var hours = count*0.25
+      sheet.getRange(i+4, lastColumn+1).setValue(hours)
     
-    // 勤務時間による休憩時間の分岐
-    var break_t = 0;
-    if(hours >= 4.0 && hours < 6.0){
-      break_t = 15;
-    }else if(hours >= 6.0 && hours < 8.0){
-      break_t = 45;
-    }else if(hours >= 8.0){
-      break_t = 60;
+      // 勤務時間による休憩時間の分岐
+      var break_t = 0;
+      if(hours >= 4.0 && hours < 6.0){
+        break_t = 15;
+      }else if(hours >= 6.0 && hours < 8.0){
+        break_t = 45;
+      }else if(hours >= 8.0){
+        break_t = 60;
+      }
+      // 休憩時間の計算
+      sheet.getRange(i+4, lastColumn+2).setValue(break_t);
     }
-    // 休憩時間の計算
-    sheet.getRange(i+4, lastColumn+2).setValue(break_t);
   }
 }
 
@@ -94,7 +98,7 @@ function getTotalTime() {
   var admin_sheet = admin_ss.getSheetByName(month);
   admin_sheet.getRange("A1").setValue(month + "月");
   
-  var sheet_len = original_ss.getNumSheets()
+  var sheet_len = original_ss.getNumSheets();
   
   // 従業員数
   var row_len = first_sheet.getLastRow()-1;  
