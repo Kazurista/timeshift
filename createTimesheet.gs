@@ -2,7 +2,7 @@ function timeCaluculations() {
   // 現在アクティブなスプレッドシートを取得
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   
-  var sheet_len = original_ss.getNumSheets();
+  var sheet_len = ss.getNumSheets();
   for(var k=1; k<sheet_len; k++){
     // そのスプレッドシートにある最初のシートを取得
     var sheet = ss.getSheets()[k];
